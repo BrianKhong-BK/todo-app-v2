@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Card, Button } from "react-bootstrap";
+import { TodoContext } from '../contexts/TodoContext'
 
 export default function TodoCard({ todo }) {
     const completed = todo.completed;
     const border = completed ? "success" : "danger"
     const [timer, setTimer] = useState(0)
     const [timerInterval, setTimerInterval] = useState(null)
+    const setTodos = useContext(TodoContext).setTodos
 
     const startTimer = () => {
         if (timerInterval === null) {
@@ -20,6 +22,19 @@ export default function TodoCard({ todo }) {
         clearInterval(timerInterval)
         setTimerInterval(null)
     }
+
+    const resetTimer = () => {
+        clearInterval(timerInterval)
+        setTimerInterval(null)
+        setTimer(0)
+    }
+
+    const deleteTodo = () => {
+        setTodos((prevTodos) =>
+            prevTodos.filter((prevTodo) => prevTodo.id !== todo.id)
+        )
+    }
+
 
     useEffect(() => {
         return () => {
@@ -37,8 +52,17 @@ export default function TodoCard({ todo }) {
                 <Button onClick={startTimer}>
                     <i className='bi bi-play'></i>
                 </Button>
-                <Button onClick={pauseTimer} className='mx-2'>
+                <Button onClick={pauseTimer} className='ms-2'>
                     <i className='bi bi-pause'></i>
+                </Button>
+                <Button onClick={resetTimer} className='ms-2'>
+                    <i className='bi bi-arrow-clockwise'></i>
+                </Button>
+                <Button variant='secondary' href={`todo/${todo.id}`} className='ms-2'>
+                    <i className="bi bi-pencil"></i>
+                </Button>
+                <Button variant="danger" onClick={deleteTodo} className='ms-2'>
+                    <i className='bi bi-trash3'></i>
                 </Button>
             </Card.Body>
         </Card>
